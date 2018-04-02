@@ -141,7 +141,6 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         }
     }
 
-
     /**
      * Update a Customer Payment Profile
      *
@@ -158,7 +157,6 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $request = new UpdateCustomerPaymentProfileRequest();
         $request->setMerchantAuthentication($this->merchantAuthentication);
         $request->setCustomerProfileId($customerProfileId);
-
 
         // CreditCard information
         // As per the documentation this needs to be sent despite being changed or not
@@ -204,7 +202,6 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         } else {
             $billTo = $paymentProfile->getBillTo();
         }
-
 
         // Create the Customer Payment Profile object
         $profile = new CustomerPaymentProfileExType();

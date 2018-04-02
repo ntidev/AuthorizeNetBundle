@@ -2,6 +2,7 @@
 
 namespace NTI\AuthorizeNet\Tests\Service\Customer;
 
+use net\authorize\api\contract\v1\CustomerProfileMaskedType;
 use NTI\AuthorizeNetBundle\Exception\Customer\ANetRequestException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,6 +29,22 @@ class ANetCustomerProfileServiceTest extends KernelTestCase
         $profiles = $this->container->get('authorize_dot_net_api.customer_profile')->getAllProfiles();
 
         $this->assertTrue(is_array($profiles), "The result was not an array.");
+    }
+
+    public function testGetProfile() {
+        $this->init();
+
+        $profiles = $this->container->get('authorize_dot_net_api.customer_profile')->getAllProfiles();
+
+        if(count($profiles) <= 0) {
+            $this->fail("At least one Customer Profile is required in Authorize.NET in order to test this.");
+            return;
+        }
+
+        $profile = $this->container->get('authorize_dot_net_api.customer_profile')->getProfile($profiles[0]);
+
+        $this->assertInstanceOf(CustomerProfileMaskedType::class, $profile, "The result for the profile was not an instance of CustomerProfileMaskedType");
+
     }
 
     public function testCreateCustomerProfile() {
