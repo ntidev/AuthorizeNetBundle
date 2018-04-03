@@ -26,7 +26,7 @@ class ANetCustomerProfileServiceTest extends KernelTestCase
     public function testGetAllProfiles() {
         $this->init();
 
-        $profiles = $this->container->get('authorize_dot_net_api.customer_profile')->getAllProfiles();
+        $profiles = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getAllProfiles();
 
         $this->assertTrue(is_array($profiles), "The result was not an array.");
     }
@@ -34,14 +34,14 @@ class ANetCustomerProfileServiceTest extends KernelTestCase
     public function testGetProfile() {
         $this->init();
 
-        $profiles = $this->container->get('authorize_dot_net_api.customer_profile')->getAllProfiles();
+        $profiles = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getAllProfiles();
 
         if(count($profiles) <= 0) {
             $this->fail("At least one Customer Profile is required in Authorize.NET in order to test this.");
             return;
         }
 
-        $profile = $this->container->get('authorize_dot_net_api.customer_profile')->getProfile($profiles[0]);
+        $profile = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getProfile($profiles[0]);
 
         $this->assertInstanceOf(CustomerProfileMaskedType::class, $profile, "The result for the profile was not an instance of CustomerProfileMaskedType");
 
@@ -51,7 +51,7 @@ class ANetCustomerProfileServiceTest extends KernelTestCase
         $this->init();
 
         try {
-            $profileId = $this->container->get('authorize_dot_net_api.customer_profile')->createProfile(array(
+            $profileId = $this->container->get('nti.authorize_dot_net_api.customer_profile')->createProfile(array(
                 "merchant_account_id" => uniqid(),
                 "email" => "bugs@" . uniqid() . ".com",
                 "description" => "bugs bunny's company",

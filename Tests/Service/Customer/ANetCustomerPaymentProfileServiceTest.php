@@ -21,7 +21,7 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
 
     public function testCreatePaymentProfile() {
         $this->init();
-        $profiles = $this->container->get('authorize_dot_net_api.customer_profile')->getAllProfiles();
+        $profiles = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getAllProfiles();
         if(count($profiles) <= 0) {
             $this->fail("At least one Customer Profile is required in Authorize.NET in order to test this.");
             return;
@@ -42,7 +42,7 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
             "cc_code" => "323",
         );
 
-        $profileId = $this->container->get('authorize_dot_net_api.customer_payment_profile')->createProfile($profiles[0], $data);
+        $profileId = $this->container->get('nti.authorize_dot_net_api.customer_payment_profile')->createProfile($profiles[0], $data);
 
         $this->assertTrue($profileId >= 0, "The Profile Id returned was not valid: " . $profileId);
 
@@ -52,14 +52,14 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
     public function testUpdateCustomerProfile() {
         $this->init();
 
-        $profiles = $this->container->get('authorize_dot_net_api.customer_profile')->getAllProfiles();
+        $profiles = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getAllProfiles();
         if(count($profiles) <= 0) {
             $this->fail("At least one Customer Profile is required in Authorize.NET in order to test this.");
             return;
         }
 
         /** @var CustomerProfileMaskedType $customerProfile */
-        $customerProfile = $this->container->get('authorize_dot_net_api.customer_profile')->getProfile($profiles[0]);
+        $customerProfile = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getProfile($profiles[0]);
         $paymentProfiles = $customerProfile->getPaymentProfiles();
 
         if(count($paymentProfiles) <= 0) {
@@ -90,7 +90,7 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
         );
 
         /** @var CustomerPaymentProfileExType $result */
-        $result = $this->container->get('authorize_dot_net_api.customer_payment_profile')->updateProfile($customerProfile->getCustomerProfileId(),$paymentProfile->getCustomerPaymentProfileId(), $data);
+        $result = $this->container->get('nti.authorize_dot_net_api.customer_payment_profile')->updateProfile($customerProfile->getCustomerProfileId(),$paymentProfile->getCustomerPaymentProfileId(), $data);
 
         $this->assertInstanceOf(CustomerPaymentProfileExType::class, $result, "The result was not an instance of CustomerPaymentProfileExType.");
 
@@ -100,14 +100,14 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
     public function testDeleteCustomerPaymentProfile() {
         $this->init();
 
-        $profiles = $this->container->get('authorize_dot_net_api.customer_profile')->getAllProfiles();
+        $profiles = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getAllProfiles();
         if(count($profiles) <= 0) {
             $this->fail("At least one Customer Profile is required in Authorize.NET in order to test this.");
             return;
         }
 
         /** @var CustomerProfileMaskedType $customerProfile */
-        $customerProfile = $this->container->get('authorize_dot_net_api.customer_profile')->getProfile($profiles[0]);
+        $customerProfile = $this->container->get('nti.authorize_dot_net_api.customer_profile')->getProfile($profiles[0]);
         $paymentProfiles = $customerProfile->getPaymentProfiles();
 
         if(count($paymentProfiles) <= 0) {
@@ -118,7 +118,7 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
         /** @var CustomerPaymentProfileMaskedType $paymentProfile */
         $paymentProfile = $paymentProfiles[0];
 
-        $result = $this->container->get('authorize_dot_net_api.customer_payment_profile')->deleteProfile($paymentProfile->getCustomerPaymentProfileId());
+        $result = $this->container->get('nti.authorize_dot_net_api.customer_payment_profile')->deleteProfile($paymentProfile->getCustomerPaymentProfileId());
 
         $this->assertTrue($result, "Unable to delete the Customer Payment Profile.");
 
