@@ -72,6 +72,7 @@ class ANetCustomerProfileService extends ANetRequestService {
         $request = new GetCustomerProfileRequest();
         $request->setMerchantAuthentication($this->merchantAuthentication);
         $request->setCustomerProfileId($profileId);
+        $request->setUnmaskExpirationDate(true);
         $controller = new GetCustomerProfileController($request);
 
         /** @var GetCustomerProfileResponse $response */
