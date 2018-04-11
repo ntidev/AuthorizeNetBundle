@@ -84,13 +84,14 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $state = $data["state"];
         $zip = $data["zip"];
         $country = $data["country"] ?? "USA";
-        $firstname = $data["firstname"];
-        $lastname = $data["lastname"];
-        $phoneNumber = $data["phone_number"];
+        $firstname = $data["firstName"];
+        $lastname = $data["lastName"];
+        $email = $data["email"];
+        $phoneNumber = $data["phoneNumber"];
         $faxNumber = $data["fax"] ?? "";
-        $ccNumber = $data["cc_number"];
-        $ccExpiration = $data["cc_expiration"];
-        $ccCode = $data["cc_code"];
+        $ccNumber = $data["cardNumber"];
+        $ccExpiration = $data["expirationDate"];
+        $ccCode = $data["code"];
 
         // Set credit card information for payment profile
         $creditCard = new CreditCardType();
@@ -104,6 +105,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $billTo = new CustomerAddressType();
         $billTo->setFirstName($firstname);
         $billTo->setLastName($lastname);
+        $billTo->setEmail($email);
         $billTo->setCompany($company);
         $billTo->setAddress($address);
         $billTo->setCity($city);
@@ -162,10 +164,14 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         // CreditCard information
         // As per the documentation this needs to be sent despite being changed or not
         $creditCard = new CreditCardType();
-        if(isset($data["creditcard"])) {
-            $ccNumber = $data["creditcard"]["cc_number"];
-            $ccExpiration = $data["creditcard"]["cc_expiration"];
-            $ccCode = $data["creditcard"]["cc_code"];
+        $payment = isset($data["payment"]) ? $data["payment"] : array();
+        if(isset($payment["creditCard"]) &&
+            isset($payment["creditCard"]["cardNumber"]) &&
+            isset($payment["creditCard"]["expirationDate"]) &&
+            isset($payment["creditCard"]["code"])) {
+            $ccNumber = $payment["creditCard"]["cardNumber"];
+            $ccExpiration = $payment["creditCard"]["expirationDate"];
+            $ccCode = $payment["creditCard"]["code"];
             $creditCard->setCardNumber($ccNumber);
             $creditCard->setExpirationDate($ccExpiration);
             $creditCard->setCardCode($ccCode);
@@ -176,20 +182,22 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $paymentCreditCard = new PaymentType();
         $paymentCreditCard->setCreditCard($creditCard);
 
-        if(isset($data["bill_to"])) {
-            $company = $data["bill_to"]["company"];
-            $address = $data["bill_to"]["address"];
-            $city = $data["bill_to"]["city"];
-            $state = $data["bill_to"]["state"];
-            $zip = $data["bill_to"]["zip"];
-            $country = $data["bill_to"]["country"] ?? "USA";
-            $firstname = $data["bill_to"]["firstname"];
-            $lastname = $data["bill_to"]["lastname"];
-            $phoneNumber = $data["bill_to"]["phone_number"];
-            $faxNumber = $data["bill_to"]["fax"] ?? "";
+        if(isset($data["billTo"])) {
+            $company = $data["billTo"]["company"] ?? "";
+            $address = $data["billTo"]["address"] ?? "";
+            $city = $data["billTo"]["city"] ?? "";
+            $state = $data["billTo"]["state"] ?? "";
+            $zip = $data["billTo"]["zip"] ?? "";
+            $country = $data["billTo"]["country"] ?? "USA";
+            $firstname = $data["billTo"]["firstName"] ?? "";
+            $lastname = $data["billTo"]["lastName"] ?? "";
+            $email = $data["billTo"]["email"] ?? "";
+            $phoneNumber = $data["billTo"]["phoneNumber"] ?? "";
+            $faxNumber = $data["billTo"]["fax"] ?? "";
 
             // Create the Bill To info for new payment type
             $billTo = new CustomerAddressType();
+            $billTo->setEmail($email);
             $billTo->setFirstName($firstname);
             $billTo->setLastName($lastname);
             $billTo->setCompany($company);
@@ -211,10 +219,11 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $profile->setPayment($paymentCreditCard);
 
         // Submit a UpdatePaymentProfileRequest
-        $request->setPaymentProfile( $profile );
+        $request->setPaymentProfile($profile);
         $controller = new UpdateCustomerPaymentProfileController($request);
 
         $response = $controller->executeWithApiResponse($this->endpoint);
+
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             return $profile;
         } else {
