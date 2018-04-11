@@ -1,21 +1,21 @@
 services:
 
     # Customer Profile
-    nti.authorize_dot_net_api.customer_profile:
+    nti.authorizenet.customer_profile:
         class: NTI\AuthorizeNetBundle\Services\Customer\ANetCustomerProfileService
         arguments: ["@service_container"]
 
     # Customer Payment Profile
-    nti.authorize_dot_net_api.customer_payment_profile:
+    nti.authorizenet.customer_payment_profile:
         class: NTI\AuthorizeNetBundle\Services\Customer\ANetCustomerPaymentProfileService
         arguments: ["@service_container"]
 
     # Payment
-    nti.authorize_dot_net_api.payment_transaction:
+    nti.authorizenet.payment_transaction:
         class: NTI\AuthorizeNetBundle\Services\Payment\ANetPaymentService
         arguments: ["@service_container"]
 
     # Transaction
-    nti.authorize_dot_net_api.payment_transaction_reporting:
+    nti.authorizenet.payment_transaction_reporting:
         class: NTI\AuthorizeNetBundle\Services\Transaction\ANetTransactionReportingService
         arguments: ["@service_container"]
