@@ -116,22 +116,21 @@ class ANetCustomerProfileService extends ANetRequestService {
         // Payment Profiles (Optional)
         $paymentProfileTypes = array();
         if(isset($data["payment_profiles"])) {
-
-            $paymentProfiles = $data["payment_profiles"];
-            foreach($paymentProfiles as $paymentProfile) {
+            foreach($data["payment_profiles"] as $paymentProfile) {
                 $company = $paymentProfile["company"];
                 $address = $paymentProfile["address"];
                 $city = $paymentProfile["city"];
                 $state = $paymentProfile["state"];
                 $zip = $paymentProfile["zip"];
                 $country = $paymentProfile["country"] ?? "USA";
-                $firstname = $paymentProfile["firstname"];
-                $lastname = $paymentProfile["lastname"];
-                $phoneNumber = $paymentProfile["phone_number"];
+                $firstname = $paymentProfile["firstName"];
+                $lastname = $paymentProfile["lastName"];
+                $email = $paymentProfile["email"];
+                $phoneNumber = $paymentProfile["phoneNumber"];
                 $faxNumber = $paymentProfile["fax"] ?? "";
-                $ccNumber = $paymentProfile["cc_number"];
-                $ccExpiration = $paymentProfile["cc_expiration"];
-                $ccCode = $paymentProfile["cc_code"];
+                $ccNumber = $paymentProfile["cardNumber"];
+                $ccExpiration = $paymentProfile["expirationDate"];
+                $ccCode = $paymentProfile["code"];
 
                 // Set credit card information for payment profile
                 $creditCard = new CreditCardType();
