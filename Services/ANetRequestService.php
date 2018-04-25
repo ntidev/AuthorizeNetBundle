@@ -10,6 +10,10 @@ use net\authorize\api\contract\v1 as AnetAPI;
 
 class ANetRequestService {
 
+    // Error Codes
+    const E00039_DUPLICATE_PROFILE = "E00039";
+
+
     // Endpoints CraueConfigBundle configuration keys
     const API_LOGIN_ID_KEY = "authorizenet.api.login_id";
     const API_TRANSACTION_KEY_KEY = "authorizenet.api.transaction_key";

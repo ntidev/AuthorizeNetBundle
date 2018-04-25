@@ -177,6 +177,15 @@ class ANetCustomerProfileService extends ANetRequestService {
             return $response->getCustomerProfileId();
         } else {
             $errorMessages = $response->getMessages()->getMessage();
+
+            // Extract the Profile ID if trying to create a duplicate.
+            if($errorMessages[0] == self::E00039_DUPLICATE_PROFILE) {
+                preg_match('/ \d /', $errorMessages[0]->getText(), $matches);
+                if(count($matches) > 0) {
+                    return $matches[0];
+                }
+            }
+            
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
 
