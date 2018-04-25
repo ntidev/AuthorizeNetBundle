@@ -180,7 +180,7 @@ class ANetCustomerProfileService extends ANetRequestService {
 
             // Extract the Profile ID if trying to create a duplicate.
             if($errorMessages[0] == self::E00039_DUPLICATE_PROFILE) {
-                preg_match('/ \d /', $errorMessages[0]->getText(), $matches);
+                preg_match('/ \d+ /', $errorMessages[0]->getText(), $matches);
                 if(count($matches) > 0) {
                     return $matches[0];
                 }
