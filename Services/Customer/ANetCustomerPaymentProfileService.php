@@ -2,8 +2,10 @@
 
 namespace NTI\AuthorizeNetBundle\Services\Customer;
 
-use NTI\AuthorizeNetBundle\Exception\Customer\ANetRequestException;
+use NTI\AuthorizeNetBundle\Exception\ANetRequestException;
+use NTI\AuthorizeNetBundle\Exception\ANetInvalidRequestFormatException;
 use NTI\AuthorizeNetBundle\Services\ANetRequestService;
+use NTI\AuthorizeNetBundle\Models\Customer\CustomerPaymentProfileModel;
 use net\authorize\api\contract\v1\CreateCustomerPaymentProfileRequest;
 use net\authorize\api\contract\v1\CreateCustomerPaymentProfileResponse;
 use net\authorize\api\contract\v1\CreditCardType;
@@ -24,6 +26,7 @@ use net\authorize\api\controller\GetCustomerProfileController;
 use net\authorize\api\controller\UpdateCustomerPaymentProfileController;
 use net\authorize\api\controller\ValidateCustomerPaymentProfileController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
 
 /**
  * Class ANetCustomerPaymentProfileService
@@ -35,8 +38,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
      * ANetCustomerPaymentProfileService constructor.
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
-    {
+    public function __construct(ContainerInterface $container) {
         parent::__construct($container);
     }
 
@@ -78,42 +80,42 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
      */
     public function createProfile($customerProfileId, $data) {
 
-        $company = $data["company"];
-        $address = $data["address"];
-        $city = $data["city"];
-        $state = $data["state"];
-        $zip = $data["zip"];
-        $country = $data["country"] ?? "USA";
-        $firstname = $data["firstName"];
-        $lastname = $data["lastName"];
-        $email = $data["email"];
-        $phoneNumber = $data["phoneNumber"];
-        $faxNumber = $data["fax"] ?? "";
-        $ccNumber = $data["cardNumber"];
-        $ccExpiration = $data["expirationDate"];
-        $ccCode = $data["code"];
+        /** @var CustomerPaymentProfileModel $profile */
+        $profile = $this->container->get('jms_serializer')->deserialize(json_encode($data), CustomerPaymentProfileModel::class, 'json');
+        $validator = $this->container->get('validator');
+        $errors = $validator->validate($profile);
+        if(count($errors) > 0) {
+            throw new ANetInvalidRequestFormatException($errors);
+        }
+
+        if(!$profile->getBillTo()) {
+            throw new ANetRequestException("The Contact information is required for new Payment Profiles.");
+        }
+
+        if(!$profile->getPayment()) {
+            throw new ANetRequestException("The Credit Card information is required for new Payment Profiles.");
+        }
 
         // Set credit card information for payment profile
         $creditCard = new CreditCardType();
-        $creditCard->setCardNumber($ccNumber);
-        $creditCard->setExpirationDate($ccExpiration);
-        $creditCard->setCardCode($ccCode);
+        $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
+        $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
+        $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
         $paymentCreditCard = new PaymentType();
         $paymentCreditCard->setCreditCard($creditCard);
 
         // Create the Bill To info for new payment type
         $billTo = new CustomerAddressType();
-        $billTo->setFirstName($firstname);
-        $billTo->setLastName($lastname);
-        $billTo->setEmail($email);
-        $billTo->setCompany($company);
-        $billTo->setAddress($address);
-        $billTo->setCity($city);
-        $billTo->setState($state);
-        $billTo->setZip($zip);
-        $billTo->setCountry($country);
-        $billTo->setPhoneNumber($phoneNumber);
-        $billTo->setfaxNumber($faxNumber);
+        $billTo->setFirstName($profile->getBillTo()->getFirstName());
+        $billTo->setLastName($profile->getBillTo()->getLastName());
+        $billTo->setEmail($profile->getBillTo()->getEmail());
+        $billTo->setPhoneNumber($profile->getBillTo()->getPhoneNumber());
+        $billTo->setCompany($profile->getBillTo()->getCompany());
+        $billTo->setAddress($profile->getBillTo()->getAddress());
+        $billTo->setCity($profile->getBillTo()->getCity());
+        $billTo->setState($profile->getBillTo()->getState());
+        $billTo->setZip($profile->getBillTo()->getZip());
+        $billTo->setCountry($profile->getBillTo()->getCountry());
 
         // Create a new Customer Payment Profile object
         $paymentprofile = new CustomerPaymentProfileType();
@@ -156,6 +158,14 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
     public function updateProfile($customerProfileId, $paymentProfileId, $data) {
         $paymentProfile = $this->getProfile($customerProfileId, $paymentProfileId);
 
+        /** @var CustomerPaymentProfileModel $profile */
+        $profile = $this->container->get('jms_serializer')->deserialize(json_encode($data), CustomerPaymentProfileModel::class, 'json');
+        $validator = $this->container->get('validator');
+        $errors = $validator->validate($profile);
+        if(count($errors) > 0) {
+            throw new ANetInvalidRequestFormatException($errors);
+        }
+
         //Set profile ids of profile to be updated
         $request = new UpdateCustomerPaymentProfileRequest();
         $request->setMerchantAuthentication($this->merchantAuthentication);
@@ -164,17 +174,10 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         // CreditCard information
         // As per the documentation this needs to be sent despite being changed or not
         $creditCard = new CreditCardType();
-        $payment = isset($data["payment"]) ? $data["payment"] : array();
-        if(isset($payment["creditCard"]) &&
-            isset($payment["creditCard"]["cardNumber"]) &&
-            isset($payment["creditCard"]["expirationDate"]) &&
-            isset($payment["creditCard"]["code"])) {
-            $ccNumber = $payment["creditCard"]["cardNumber"];
-            $ccExpiration = $payment["creditCard"]["expirationDate"];
-            $ccCode = $payment["creditCard"]["code"];
-            $creditCard->setCardNumber($ccNumber);
-            $creditCard->setExpirationDate($ccExpiration);
-            $creditCard->setCardCode($ccCode);
+        if($profile->getPayment()) {
+            $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
+            $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
+            $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
         } else {
             $creditCard->setCardNumber($paymentProfile->getPayment()->getCreditCard()->getCardNumber());
             $creditCard->setExpirationDate($paymentProfile->getPayment()->getCreditCard()->getExpirationDate());
@@ -182,32 +185,18 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $paymentCreditCard = new PaymentType();
         $paymentCreditCard->setCreditCard($creditCard);
 
-        if(isset($data["billTo"])) {
-            $company = $data["billTo"]["company"] ?? "";
-            $address = $data["billTo"]["address"] ?? "";
-            $city = $data["billTo"]["city"] ?? "";
-            $state = $data["billTo"]["state"] ?? "";
-            $zip = $data["billTo"]["zip"] ?? "";
-            $country = $data["billTo"]["country"] ?? "USA";
-            $firstname = $data["billTo"]["firstName"] ?? "";
-            $lastname = $data["billTo"]["lastName"] ?? "";
-            $email = $data["billTo"]["email"] ?? "";
-            $phoneNumber = $data["billTo"]["phoneNumber"] ?? "";
-            $faxNumber = $data["billTo"]["fax"] ?? "";
-
-            // Create the Bill To info for new payment type
+        if($profile->getBillTo()) {
             $billTo = new CustomerAddressType();
-            $billTo->setEmail($email);
-            $billTo->setFirstName($firstname);
-            $billTo->setLastName($lastname);
-            $billTo->setCompany($company);
-            $billTo->setAddress($address);
-            $billTo->setCity($city);
-            $billTo->setState($state);
-            $billTo->setZip($zip);
-            $billTo->setCountry($country);
-            $billTo->setPhoneNumber($phoneNumber);
-            $billTo->setfaxNumber($faxNumber);
+            $billTo->setFirstName($profile->getBillTo()->getFirstName());
+            $billTo->setLastName($profile->getBillTo()->getLastName());
+            $billTo->setEmail($profile->getBillTo()->getEmail());
+            $billTo->setPhoneNumber($profile->getBillTo()->getPhoneNumber());
+            $billTo->setCompany($profile->getBillTo()->getCompany());
+            $billTo->setAddress($profile->getBillTo()->getAddress());
+            $billTo->setCity($profile->getBillTo()->getCity());
+            $billTo->setState($profile->getBillTo()->getState());
+            $billTo->setZip($profile->getBillTo()->getZip());
+            $billTo->setCountry($profile->getBillTo()->getCountry());
         } else {
             $billTo = $paymentProfile->getBillTo();
         }

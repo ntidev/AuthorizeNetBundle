@@ -4,7 +4,7 @@ namespace NTI\AuthorizeNetBundle\Services\Transaction;
 
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
-use NTI\AuthorizeNetBundle\Exception\Customer\ANetRequestException;
+use NTI\AuthorizeNetBundle\Exception\ANetRequestException;
 use NTI\AuthorizeNetBundle\Services\ANetRequestService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

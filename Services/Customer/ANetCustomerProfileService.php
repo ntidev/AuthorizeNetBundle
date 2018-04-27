@@ -22,8 +22,11 @@ use net\authorize\api\controller\DeleteCustomerProfileController;
 use net\authorize\api\controller\GetCustomerProfileController;
 use net\authorize\api\controller\GetCustomerProfileIdsController;
 use net\authorize\api\controller\UpdateCustomerProfileController;
-use NTI\AuthorizeNetBundle\Exception\Customer\ANetRequestException;
+use NTI\AuthorizeNetBundle\Exception\ANetRequestException;
+use NTI\AuthorizeNetBundle\Exception\ANetInvalidRequestFormatException;
+use NTI\AuthorizeNetBundle\Models\Customer\CustomerPaymentProfileModel;
 use NTI\AuthorizeNetBundle\Services\ANetRequestService;
+use NTI\AuthorizeNetBundle\Models\Customer\CustomerProfileModel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -95,11 +98,14 @@ class ANetCustomerProfileService extends ANetRequestService {
      */
     public function createProfile($data) {
 
-        // Required parameters
-        $merchantAccountId = $data["merchant_account_id"];
-        $email = $data["email"];
-        $description = $data["description"];
-        $customerType = $data["type"] ?? "individual";
+        /** @var CustomerProfileModel $profile */
+        $profile = $this->container->get('jms_serializer')->deserialize(json_encode($data), CustomerProfileModel::class, 'json');
+
+        $validator = $this->container->get('validator');
+        $errors = $validator->validate($profile);
+        if(count($errors) > 0) {
+            throw new ANetInvalidRequestFormatException($errors);
+        }
 
         // Prepare the Request
         $refId = uniqid("ref_");
@@ -108,64 +114,58 @@ class ANetCustomerProfileService extends ANetRequestService {
         $request->setRefId($refId);
 
         // Setup Customer Profile
-        $profile = new CustomerProfileType();
-        $profile->setMerchantCustomerId($merchantAccountId);
-        $profile->setEmail($email);
-        $profile->setDescription($description);
+        $profileType = new CustomerProfileType();
+        $profileType->setMerchantCustomerId($profile->getMerchantAccountId());
+        $profileType->setEmail($profile->getEmail());
+        $profileType->setDescription($profile->getDescription());
 
         // Payment Profiles (Optional)
         $paymentProfileTypes = array();
-        if(isset($data["payment_profiles"])) {
-            foreach($data["payment_profiles"] as $paymentProfile) {
-                $company = $paymentProfile["company"];
-                $address = $paymentProfile["address"];
-                $city = $paymentProfile["city"];
-                $state = $paymentProfile["state"];
-                $zip = $paymentProfile["zip"];
-                $country = $paymentProfile["country"] ?? "USA";
-                $firstname = $paymentProfile["firstName"];
-                $lastname = $paymentProfile["lastName"];
-                $email = $paymentProfile["email"];
-                $phoneNumber = $paymentProfile["phoneNumber"];
-                $faxNumber = $paymentProfile["fax"] ?? "";
-                $ccNumber = $paymentProfile["cardNumber"];
-                $ccExpiration = $paymentProfile["expirationDate"];
-                $ccCode = $paymentProfile["code"];
+        if($profile->getPaymentProfiles()) {
+
+            /** @var CustomerPaymentProfileModel $paymentProfile */
+            foreach($profile->getPaymentProfiles() as $paymentProfile) {
+                if(!$paymentProfile->getBillTo()) {
+                    throw new ANetRequestException("The Contact information is required for new Payment Profiles.");
+                }
+
+                if(!$paymentProfile->getPayment()) {
+                    throw new ANetRequestException("The Credit Card information is required for new Payment Profiles.");
+                }
 
                 // Set credit card information for payment profile
                 $creditCard = new CreditCardType();
-                $creditCard->setCardNumber($ccNumber);
-                $creditCard->setExpirationDate($ccExpiration);
-                $creditCard->setCardCode($ccCode);
+                $creditCard->setCardNumber($paymentProfile->getPayment()->getCreditCard()->getCardNumber());
+                $creditCard->setExpirationDate($paymentProfile->getPayment()->getCreditCard()->getExpirationDate());
+                $creditCard->setCardCode($paymentProfile->getPayment()->getCreditCard()->getCode());
                 $paymentCreditCard = new PaymentType();
                 $paymentCreditCard->setCreditCard($creditCard);
 
                 // Create the Bill To info for new payment type
                 $billTo = new CustomerAddressType();
-                $billTo->setFirstName($firstname);
-                $billTo->setLastName($lastname);
-                $billTo->setCompany($company);
-                $billTo->setAddress($address);
-                $billTo->setCity($city);
-                $billTo->setState($state);
-                $billTo->setZip($zip);
-                $billTo->setCountry($country);
-                $billTo->setPhoneNumber($phoneNumber);
-                $billTo->setfaxNumber($faxNumber);
+                $billTo->setFirstName($paymentProfile->getBillTo()->getFirstName());
+                $billTo->setLastName($paymentProfile->getBillTo()->getLastName());
+                $billTo->setEmail($paymentProfile->getBillTo()->getEmail());
+                $billTo->setPhoneNumber($paymentProfile->getBillTo()->getPhoneNumber());
+                $billTo->setCompany($paymentProfile->getBillTo()->getCompany());
+                $billTo->setAddress($paymentProfile->getBillTo()->getAddress());
+                $billTo->setCity($paymentProfile->getBillTo()->getCity());
+                $billTo->setState($paymentProfile->getBillTo()->getState());
+                $billTo->setZip($paymentProfile->getBillTo()->getZip());
+                $billTo->setCountry($paymentProfile->getBillTo()->getCountry());
 
                 // Create a new CustomerPaymentProfile object
                 $paymentProfileType = new CustomerPaymentProfileType();
-                $paymentProfileType->setCustomerType($customerType);
+                $paymentProfileType->setCustomerType($profile->getCustomerType());
                 $paymentProfileType->setBillTo($billTo);
                 $paymentProfileType->setPayment($paymentCreditCard);
-                $paymentProfileType->setDefaultpaymentProfile(true);
 
                 $paymentProfileTypes[] = $paymentProfileType;
             }
-            $profile->setPaymentProfiles($paymentProfileTypes);
+            $profileType->setPaymentProfiles($paymentProfileTypes);
         }
 
-        $request->setProfile($profile);
+        $request->setProfile($profileType);
 
         /** @var CreateCustomerProfileController $controller */
         $controller = new CreateCustomerProfileController($request);
@@ -201,18 +201,20 @@ class ANetCustomerProfileService extends ANetRequestService {
      */
     public function updateProfile($profileId, $data) {
 
-        // Parameters
-        $email = $data["email"] ?? null;
-        $description = $data["description"] ?? null;
+        /** @var CustomerProfileModel $profile */
+        $profile = $this->container->get('jms_serializer')->deserialize(json_encode($data), CustomerProfileModel::class, 'json');
+        $validator = $this->container->get('validator');
+        $errors = $validator->validate($profile);
+
+        if(count($errors) > 0) {
+            throw new ANetInvalidRequestFormatException($errors);
+        }
 
         $customerProfile = new CustomerProfileExType();
         $customerProfile->setCustomerProfileId($profileId);
-        if($description) {
-            $customerProfile->setDescription($description);
-        }
-        if($email) {
-            $customerProfile->setEmail($email);
-        }
+
+        $customerProfile->setDescription($profile->getDescription());
+        $customerProfile->setEmail($profile->getEmail());
 
         $refId = uniqid("ref_");
         $request = new UpdateCustomerProfileRequest();

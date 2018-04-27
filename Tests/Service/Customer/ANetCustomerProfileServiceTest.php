@@ -3,7 +3,7 @@
 namespace NTI\AuthorizeNet\Tests\Service\Customer;
 
 use net\authorize\api\contract\v1\CustomerProfileMaskedType;
-use NTI\AuthorizeNetBundle\Exception\Customer\ANetRequestException;
+use NTI\AuthorizeNetBundle\Exception\ANetRequestException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraints\Date;
