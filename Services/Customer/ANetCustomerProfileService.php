@@ -151,7 +151,6 @@ class ANetCustomerProfileService extends ANetRequestService {
                 $billTo = new CustomerAddressType();
                 $billTo->setFirstName($paymentProfile->getBillTo()->getFirstName());
                 $billTo->setLastName($paymentProfile->getBillTo()->getLastName());
-                $billTo->setEmail($paymentProfile->getBillTo()->getEmail());
                 $billTo->setPhoneNumber($paymentProfile->getBillTo()->getPhoneNumber());
                 $billTo->setCompany($paymentProfile->getBillTo()->getCompany());
                 $billTo->setAddress($paymentProfile->getBillTo()->getAddress());
