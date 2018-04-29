@@ -55,7 +55,7 @@ class ANetCustomerProfileServiceTest extends KernelTestCase
                 "merchant_account_id" => uniqid(),
                 "email" => "bugs@" . uniqid() . ".com",
                 "description" => "bugs bunny's company",
-                "payment_profiles" => array(
+                "paymentProfiles" => array(
                     array(
                         "company" => "ACME Corporation",
                         "firstname" => "Bugs",

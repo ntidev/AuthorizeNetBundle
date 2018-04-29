@@ -55,7 +55,7 @@ class CustomerProfileModel {
      * @var array
      *
      * @Assert\Valid()
-     * @JMS\SerializedName("payment_profiles")
+     * @JMS\SerializedName("paymentProfiles")
      * @JMS\Type("array<NTI\AuthorizeNetBundle\Models\Customer\CustomerPaymentProfileModel>")
      */
     private $paymentProfiles;

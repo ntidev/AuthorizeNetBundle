@@ -38,7 +38,11 @@ class ANetTransactionReportingService extends ANetRequestService
         $controller = new AnetController\GetTransactionDetailsController($request);
 
         /** @var AnetAPI\GetTransactionDetailsResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransaction()) ? $response->getTransaction() : array();
@@ -63,7 +67,11 @@ class ANetTransactionReportingService extends ANetRequestService
         $controller = new AnetController\GetTransactionListForCustomerController($request);
 
         /** @var AnetAPI\GetTransactionListResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
@@ -89,7 +97,11 @@ class ANetTransactionReportingService extends ANetRequestService
         $controller = new AnetController\GetUnsettledTransactionListController($request);
 
         /** @var AnetAPI\GetUnsettledTransactionListResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
@@ -119,7 +131,11 @@ class ANetTransactionReportingService extends ANetRequestService
         $controller = new AnetController\GetSettledBatchListController ($request);
 
         /** @var AnetAPI\GetSettledBatchListResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
@@ -148,7 +164,11 @@ class ANetTransactionReportingService extends ANetRequestService
         //Retrieving transaction list for the given Batch Id
 
         /** @var AnetAPI\GetTransactionListResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
@@ -176,7 +196,11 @@ class ANetTransactionReportingService extends ANetRequestService
         $controller = new AnetController\GetBatchStatisticsController($request);
 
         /** @var AnetAPI\GetBatchStatisticsResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
@@ -200,7 +224,11 @@ class ANetTransactionReportingService extends ANetRequestService
         $controller = new AnetController\GetUnsettledTransactionListController($request);
 
         /** @var AnetAPI\GetUnsettledTransactionListResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
@@ -230,7 +258,11 @@ class ANetTransactionReportingService extends ANetRequestService
         $controller = new AnetController\UpdateHeldTransactionController($request);
 
         /** @var AnetAPI\UpdateHeldTransactionResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             $tresponse = $response->getTransactionResponse();

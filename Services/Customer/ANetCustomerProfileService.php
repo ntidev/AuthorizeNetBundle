@@ -79,7 +79,12 @@ class ANetCustomerProfileService extends ANetRequestService {
         $controller = new GetCustomerProfileController($request);
 
         /** @var GetCustomerProfileResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
+
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             $profile = $response->getProfile();
             return $profile;
@@ -95,6 +100,7 @@ class ANetCustomerProfileService extends ANetRequestService {
      * @param $data
      * @return string
      * @throws ANetRequestException
+     * @throws ANetInvalidRequestFormatException
      */
     public function createProfile($data) {
 
@@ -171,7 +177,11 @@ class ANetCustomerProfileService extends ANetRequestService {
         $controller = new CreateCustomerProfileController($request);
 
         /** @var CreateCustomerProfileResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return $response->getCustomerProfileId();
@@ -198,6 +208,7 @@ class ANetCustomerProfileService extends ANetRequestService {
      * @param $data
      * @return bool
      * @throws ANetRequestException
+     * @throws ANetInvalidRequestFormatException
      */
     public function updateProfile($profileId, $data) {
 
@@ -225,7 +236,11 @@ class ANetCustomerProfileService extends ANetRequestService {
         $controller = new UpdateCustomerProfileController($request);
 
         /** @var UpdateCustomerProfileResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return true;
@@ -248,7 +263,11 @@ class ANetCustomerProfileService extends ANetRequestService {
         $request->setMerchantAuthentication($this->merchantAuthentication);
         $request->setCustomerProfileId($profileId);
         $controller = new DeleteCustomerProfileController($request);
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             return true;
         } else {

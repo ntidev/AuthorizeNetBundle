@@ -53,7 +53,11 @@ class ANetPaymentService extends ANetRequestService
         $controller = new AnetController\CreateTransactionController($request);
 
         /** @var AnetAPI\CreateTransactionResponse $response */
-        $response = $controller->executeWithApiResponse($this->endpoint);
+        try {
+            $response = $controller->executeWithApiResponse($this->endpoint);
+        } catch (\Exception $ex) {
+            throw new ANetRequestException($ex->getMessage());
+        }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             $tresponse = $response->getTransactionResponse();

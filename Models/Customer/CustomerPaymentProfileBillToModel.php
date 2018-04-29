@@ -62,16 +62,6 @@ class CustomerPaymentProfileBillToModel {
     /**
      * @var string
      *
-     * @Assert\NotBlank(message="The Email is required for the billing information.")
-     * @Assert\Email(message="The Email address is not valid.")
-     * @JMS\SerializedName("email")
-     * @JMS\Type("string")
-     */
-    private $email;
-
-    /**
-     * @var string
-     *
      * @Assert\NotBlank(message="The Address is required for the billing information.")
      * @Assert\Length(
      *      max = 60,
@@ -203,24 +193,6 @@ class CustomerPaymentProfileBillToModel {
     public function setPhoneNumber($phoneNumber)
     {
         $this->phoneNumber = $phoneNumber;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     * @return CustomerPaymentProfileBillToModel
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
         return $this;
     }
 
