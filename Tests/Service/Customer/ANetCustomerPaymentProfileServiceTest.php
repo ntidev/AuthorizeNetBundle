@@ -5,6 +5,8 @@ namespace NTI\AuthorizeNet\Tests\Service\Customer;
 use net\authorize\api\contract\v1\CustomerPaymentProfileExType;
 use net\authorize\api\contract\v1\CustomerPaymentProfileMaskedType;
 use net\authorize\api\contract\v1\CustomerProfileMaskedType;
+use NTI\AuthorizeNetBundle\Exception\ANetInvalidRequestFormatException;
+use NTI\AuthorizeNetBundle\Exception\ANetRequestException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -21,28 +23,44 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
 
     public function testCreatePaymentProfile() {
         $this->init();
-        $profiles = $this->container->get('nti.authorizenet.customer_profile')->getAllProfiles();
+        try {
+            $profiles = $this->container->get('nti.authorizenet.customer_profile')->getAllProfiles();
+        } catch (ANetRequestException $e) {
+            $this->fail($e->getMessage());
+        }
         if(count($profiles) <= 0) {
             $this->fail("At least one Customer Profile is required in Authorize.NET in order to test this.");
             return;
         }
 
         $data = array(
-            "company" => "ACME Corporation",
-            "firstname" => "Bugs",
-            "lastname" => "Bunny",
-            "email" => "bugs@" . uniqid() . ".com",
-            "address" => "71 Pilgrim Avenue Chevy Chase, MD 20815",
-            "city" => "Chevy Chase",
-            "state" => "Maryland",
-            "zip" => "20815",
-            "phone_number" => "18881234567",
-            "cc_number" => "123456789101".rand(1000, 9999),
-            "cc_expiration" => "2009-08",
-            "cc_code" => "323",
+            "billTo" => array(
+                "company" => "ACME Corporation",
+                "firstName" => "Bugs",
+                "lastName" => "Bunny",
+                "address" => "71 Pilgrim Avenue Chevy Chase, MD 20815",
+                "city" => "Chevy Chase",
+                "state" => "Maryland",
+                "country" => "US",
+                "zip" => "20815",
+                "phoneNumber" => "18881234567",
+            ),
+            "payment" => array(
+                "creditCard" => array(
+                    "cardNumber" => "123456789101".rand(1000,9999),
+                    "expirationDate" => "2009-08",
+                    "code" => "323",
+                )
+            )
         );
 
-        $profileId = $this->container->get('nti.authorizenet.customer_payment_profile')->createProfile($profiles[0], $data);
+        try {
+            $profileId = $this->container->get('nti.authorizenet.customer_payment_profile')->createProfile($profiles[0], $data);
+        } catch (ANetInvalidRequestFormatException $e) {
+            $this->fail($e->getMessage());
+        } catch (ANetRequestException $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->assertTrue($profileId >= 0, "The Profile Id returned was not valid: " . $profileId);
 
@@ -52,14 +70,22 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
     public function testUpdateCustomerProfile() {
         $this->init();
 
-        $profiles = $this->container->get('nti.authorizenet.customer_profile')->getAllProfiles();
+        try {
+            $profiles = $this->container->get('nti.authorizenet.customer_profile')->getAllProfiles();
+        } catch (ANetRequestException $e) {
+            $this->fail($e->getMessage());
+        }
         if(count($profiles) <= 0) {
             $this->fail("At least one Customer Profile is required in Authorize.NET in order to test this.");
             return;
         }
 
         /** @var CustomerProfileMaskedType $customerProfile */
-        $customerProfile = $this->container->get('nti.authorizenet.customer_profile')->getProfile($profiles[0]);
+        try {
+            $customerProfile = $this->container->get('nti.authorizenet.customer_profile')->getProfile($profiles[0]);
+        } catch (ANetRequestException $e) {
+            $this->fail($e->getMessage());
+        }
         $paymentProfiles = $customerProfile->getPaymentProfiles();
 
         if(count($paymentProfiles) <= 0) {
@@ -71,26 +97,34 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
         $paymentProfile = $paymentProfiles[0];
 
         $data = array(
-            "bill_to" => array(
+            "billTo" => array(
                 "company" => "ACME Corporation",
-                "firstname" => "Bugs",
-                "lastname" => "Bunny",
-                "email" => "bugs@" . uniqid() . ".com",
+                "firstName" => "Bugs",
+                "lastName" => "Bunny",
                 "address" => "71 Pilgrim Avenue Chevy Chase, MD 20815",
                 "city" => "Chevy Chase",
                 "state" => "Maryland",
+                "country" => "US",
                 "zip" => "20815",
-                "phone_number" => "18881234567",
+                "phoneNumber" => "18881234567",
             ),
-            "creditcard" => array(
-                "cc_number" => "123456789101".rand(1000, 9999),
-                "cc_expiration" => "2009-08",
-                "cc_code" => "323",
+            "payment" => array(
+                "creditCard" => array(
+                    "cardNumber" => "123456789101".rand(1000, 9999),
+                    "expirationDate" => "2009-08",
+                    "code" => "323",
+                )
             ),
         );
 
         /** @var CustomerPaymentProfileExType $result */
-        $result = $this->container->get('nti.authorizenet.customer_payment_profile')->updateProfile($customerProfile->getCustomerProfileId(),$paymentProfile->getCustomerPaymentProfileId(), $data);
+        try {
+            $result = $this->container->get('nti.authorizenet.customer_payment_profile')->updateProfile($customerProfile->getCustomerProfileId(), $paymentProfile->getCustomerPaymentProfileId(), $data);
+        } catch (ANetInvalidRequestFormatException $e) {
+            $this->fail($e->getMessage());
+        } catch (ANetRequestException $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->assertInstanceOf(CustomerPaymentProfileExType::class, $result, "The result was not an instance of CustomerPaymentProfileExType.");
 
@@ -118,7 +152,11 @@ class ANetCustomerPaymentProfileServiceTest extends KernelTestCase {
         /** @var CustomerPaymentProfileMaskedType $paymentProfile */
         $paymentProfile = $paymentProfiles[0];
 
-        $result = $this->container->get('nti.authorizenet.customer_payment_profile')->deleteProfile($paymentProfile->getCustomerPaymentProfileId());
+        try {
+            $result = $this->container->get('nti.authorizenet.customer_payment_profile')->deleteProfile($customerProfile->getCustomerProfileId(), $paymentProfile->getCustomerPaymentProfileId());
+        } catch (ANetRequestException $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->assertTrue($result, "Unable to delete the Customer Payment Profile.");
 
