@@ -220,6 +220,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
 
         // Submit a UpdatePaymentProfileRequest
         $request->setPaymentProfile($profile);
+        $request->setValidationMode("testMode");
         $controller = new UpdateCustomerPaymentProfileController($request);
 
         try {
