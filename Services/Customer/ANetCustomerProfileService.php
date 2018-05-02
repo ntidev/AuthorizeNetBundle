@@ -223,7 +223,7 @@ class ANetCustomerProfileService extends ANetRequestService {
 
         $customerProfile = new CustomerProfileExType();
         $customerProfile->setCustomerProfileId($profileId);
-
+        $customerProfile->setMerchantCustomerId($profile->getMerchantAccountId());
         $customerProfile->setDescription($profile->getDescription());
         $customerProfile->setEmail($profile->getEmail());
 
@@ -231,6 +231,7 @@ class ANetCustomerProfileService extends ANetRequestService {
         $request = new UpdateCustomerProfileRequest();
         $request->setMerchantAuthentication($this->merchantAuthentication);
         $request->setRefId($refId);
+        $request->setProfile($customerProfile);
 
         /** @var UpdateCustomerProfileController() $controller */
         $controller = new UpdateCustomerProfileController($request);
