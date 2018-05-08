@@ -36,7 +36,6 @@ class CustomerPaymentProfileBillToModel {
     /**
      * @var string
      *
-     * @Assert\NotBlank(message="The Company is required for the billing information.")
      * @Assert\Length(
      *      max = 50,
      *      maxMessage = "The Company cannot be longer than {{ limit }} characters"
