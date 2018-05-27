@@ -132,6 +132,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         // Assemble the complete transaction request
         $request = new CreateCustomerPaymentProfileRequest();
         $request->setMerchantAuthentication($this->merchantAuthentication);
+        $request->setValidationMode($this->validationMode);
 
         // Add an existing profile id to the request
         $request->setCustomerProfileId($customerProfileId);
@@ -182,6 +183,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $request = new UpdateCustomerPaymentProfileRequest();
         $request->setMerchantAuthentication($this->merchantAuthentication);
         $request->setCustomerProfileId($customerProfileId);
+        $request->setValidationMode($this->validationMode);
 
         // CreditCard information
         // As per the documentation this needs to be sent despite being changed or not

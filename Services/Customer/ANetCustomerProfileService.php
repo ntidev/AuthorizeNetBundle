@@ -171,7 +171,7 @@ class ANetCustomerProfileService extends ANetRequestService {
         }
 
         $request->setProfile($profileType);
-        $request->setValidationMode("testMode");
+        $request->setValidationMode($this->validationMode);
 
         /** @var CreateCustomerProfileController $controller */
         $controller = new CreateCustomerProfileController($request);
