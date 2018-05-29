@@ -41,7 +41,6 @@ class CustomerPaymentProfileCreditCardModel
     /**
      * @var string
      *
-     * @Assert\NotBlank(message="The Credit Card CVV/CVC is required for the billing information.")
      * @JMS\SerializedName("code")
      * @JMS\Type("string")
      * @Assert\Regex(
