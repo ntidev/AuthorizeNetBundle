@@ -10,12 +10,18 @@ class CustomerPaymentProfilePaymentModel
     /**
      * @var CustomerPaymentProfileCreditCardModel
      *
-     * @Assert\Valid()
-     * @Assert\NotNull(message="The Credit Card information is required.")
      * @JMS\SerializedName("creditCard")
      * @JMS\Type("NTI\AuthorizeNetBundle\Models\Customer\CustomerPaymentProfileCreditCardModel")
      */
     private $creditCard;
+
+    /**
+     * @var CustomerPaymentProfileBankAccountModel
+     *
+     * @JMS\SerializedName("bankAccount")
+     * @JMS\Type("NTI\AuthorizeNetBundle\Models\Customer\CustomerPaymentProfileBankAccountModel")
+     */
+    private $bankAccount;
 
     /**
      * @return CustomerPaymentProfileCreditCardModel
@@ -32,6 +38,24 @@ class CustomerPaymentProfilePaymentModel
     public function setCreditCard($creditCard)
     {
         $this->creditCard = $creditCard;
+        return $this;
+    }
+
+    /**
+     * @return CustomerPaymentProfileBankAccountModel
+     */
+    public function getBankAccount()
+    {
+        return $this->bankAccount;
+    }
+
+    /**
+     * @param CustomerPaymentProfileBankAccountModel $bankAccount
+     * @return CustomerPaymentProfilePaymentModel
+     */
+    public function setBankAccount($bankAccount)
+    {
+        $this->bankAccount = $bankAccount;
         return $this;
     }
 

@@ -98,18 +98,6 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
             throw new ANetRequestException("The Contact information is required for new Payment Profiles.");
         }
 
-        if(!$profile->getPayment()) {
-            throw new ANetRequestException("The Credit Card information is required for new Payment Profiles.");
-        }
-
-        // Set credit card information for payment profile
-        $creditCard = new CreditCardType();
-        $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
-        $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
-        $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
-        $paymentCreditCard = new PaymentType();
-        $paymentCreditCard->setCreditCard($creditCard);
-
         // Create the Bill To info for new payment type
         $billTo = new CustomerAddressType();
         $billTo->setFirstName($profile->getBillTo()->getFirstName());
@@ -121,6 +109,31 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $billTo->setState($profile->getBillTo()->getState());
         $billTo->setZip($profile->getBillTo()->getZip());
         $billTo->setCountry($profile->getBillTo()->getCountry());
+
+        // Process the payment profile
+        if(!$profile->getPayment()) {
+            throw new ANetRequestException("The Credit Card or Bank Account information is required for new Payment Profiles.");
+        }
+
+        // Check if it's a bank account or a credit card
+        if($profile->getPayment()->getCreditCard() != null) {
+            // Set credit card information for payment profile
+            $creditCard = new CreditCardType();
+            $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
+            $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
+            $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
+            $paymentCreditCard = new PaymentType();
+            $paymentCreditCard->setCreditCard($creditCard);
+        } else {
+            $bankAccount = new BankAccountType();
+            $bankAccount->setRoutingNumber($profile->getPayment()->getBankAccount()->getRoutingNumber());
+
+            // TODO: Continue
+            // https://github.com/ntidev/AuthorizeNetBundle/issues/1
+        }
+
+
+
 
         // Create a new Customer Payment Profile object
         $paymentprofile = new CustomerPaymentProfileType();
