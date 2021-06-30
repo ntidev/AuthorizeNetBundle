@@ -53,26 +53,6 @@ class CustomerPaymentProfileBankAccountModel
     private $nameOnAccount;
 
     /**
-     * @var string
-     *
-     * @Assert\NotBlank(message="The type of eCheck is required for the billing information.")
-     * @Assert\Choice({"PPD", "WEB", "CCD"})
-     * @JMS\SerializedName("echeckType")
-     * @JMS\Type("string")
-     * @JMS\Accessor(getter="getEcheckType")
-     */
-    private $eheckType;
-
-    /**
-     * @var string
-     *
-     * @JMS\SerializedName("bankName")
-     * @JMS\Type("string")
-     * @JMS\Accessor(getter="getBankName")
-     */
-    private $bankName;
-
-    /**
      * @return string
      */
     public function getAccountType()
@@ -141,42 +121,6 @@ class CustomerPaymentProfileBankAccountModel
     public function setNameOnAccount($nameOnAccount)
     {
         $this->nameOnAccount = $nameOnAccount;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEcheckType()
-    {
-        return $this->echeckType;
-    }
-
-    /**
-     * @param string $echeckType
-     * @return CustomerPaymentProfileBankAccountModel
-     */
-    public function setEcheckType($echeckType)
-    {
-        $this->echeckType = $echeckType;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBankName()
-    {
-        return $this->bankName;
-    }
-
-    /**
-     * @param string $bankName
-     * @return CustomerPaymentProfileBankAccountModel
-     */
-    public function setBankName($bankName)
-    {
-        $this->bankName = $bankName;
         return $this;
     }
 
