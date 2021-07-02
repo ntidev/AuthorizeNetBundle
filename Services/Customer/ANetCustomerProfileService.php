@@ -105,7 +105,7 @@ class ANetCustomerProfileService extends ANetRequestService {
      */
     public function createProfile($data) {
 
-        dd($data);
+
         /** @var CustomerProfileModel $profile */
         $profile = $this->container->get('jms_serializer')->deserialize(json_encode($data), CustomerProfileModel::class, 'json');
 
