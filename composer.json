@@ -1,35 +1,38 @@
 {
-  "name" : "nti/authorizenet-bundle",
-  "description" : "Symfony AuthorizeNetBundle",
-  "type" : "symfony-bundle",
-  "authors" : [{
-    "name" : "Benjamín Visón",
-    "email" : "benjamin@syneteksolutions.com"
-  }],
-  "keywords" : [
-    "AuthorizeNetBundle"
-  ],
-  "license" : [
-    "MIT"
-  ],
-  "require" : {
-    "symfony/serializer": ">=2.0",
-    "craue/config-bundle": "~2.1",
-    "jms/serializer-bundle": ">=1.5",
-    "guzzlehttp/guzzle": ">=6.3",
-    "authorizenet/authorizenet": ">=1.9.6 || <2.0"
-  },
-  "autoload" : {
-    "psr-0" : {
-      "NTI\\AuthorizeNetBundle" : ""
+    "name": "nti/authorizenet-bundle",
+    "description": "Symfony AuthorizeNetBundle",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "Benjamín Visón",
+            "email": "benjamin@syneteksolutions.com"
+        }
+    ],
+    "keywords": [
+        "AuthorizeNetBundle"
+    ],
+    "license": [
+        "MIT"
+    ],
+    "require": {
+        "symfony/serializer": ">=2.0",
+        "craue/config-bundle": "~2.1",
+        "jms/serializer-bundle": ">=1.5",
+        "guzzlehttp/guzzle": ">=6.3",
+        "authorizenet/authorizenet": "2.0.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "NTI\\AuthorizeNetBundle": ""
+        }
+    },
+    "target-dir": "NTI/AuthorizeNetBundle",
+    "repositories": [
+        {}
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
-  },
-  "target-dir" : "NTI/AuthorizeNetBundle",
-  "repositories" : [{
-  }],
-  "extra" : {
-    "branch-alias" : {
-      "dev-master" : "1.0-dev"
-    }
-  }
 }
