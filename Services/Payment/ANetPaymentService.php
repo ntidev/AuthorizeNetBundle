@@ -42,7 +42,7 @@ class ANetPaymentService extends ANetRequestService
 
         $profileToCharge->setPaymentProfile($paymentProfile);
         $transactionRequestType = new AnetAPI\TransactionRequestType();
-        $transactionRequestType->setTransactionType( "authCaptureTransaction");
+        $transactionRequestType->setTransactionType("authCaptureTransaction");
         $transactionRequestType->setAmount($amount);
         $transactionRequestType->setProfile($profileToCharge);
 
@@ -68,6 +68,11 @@ class ANetPaymentService extends ANetRequestService
                 throw new ANetRequestException("Error " . $tresponse->getErrors()[0]->getErrorCode() . ": " . $tresponse->getErrors()[0]->getErrorText());
             }
         } else {
+
+            if($response != null && $response->getTransactionResponse() != null) {
+                $tresponse = $response->getTransactionResponse();
+                throw new ANetRequestException("Error " . $tresponse->getErrors()[0]->getErrorCode() . ": " . $tresponse->getErrors()[0]->getErrorText());
+            }
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }

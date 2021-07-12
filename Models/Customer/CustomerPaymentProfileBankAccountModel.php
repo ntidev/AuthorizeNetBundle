@@ -53,6 +53,16 @@ class CustomerPaymentProfileBankAccountModel
     private $nameOnAccount;
 
     /**
+     * @var string
+     *
+     * @Assert\NotBlank(message="The bank name is required for the bank account information.")
+     * @JMS\SerializedName("bankName")
+     * @JMS\Type("string")
+     * @JMS\Accessor(getter="getBankName")
+     */
+    private $bankName;
+
+    /**
      * @return string
      */
     public function getAccountType()
@@ -121,6 +131,24 @@ class CustomerPaymentProfileBankAccountModel
     public function setNameOnAccount($nameOnAccount)
     {
         $this->nameOnAccount = $nameOnAccount;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBankName()
+    {
+        return $this->bankName;
+    }
+
+    /**
+     * @param string $bankName
+     * @return CustomerPaymentProfileBankAccountModel
+     */
+    public function setBankName($bankName)
+    {
+        $this->bankName = $bankName;
         return $this;
     }
 
