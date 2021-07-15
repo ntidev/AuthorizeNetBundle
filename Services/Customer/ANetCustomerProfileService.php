@@ -158,7 +158,6 @@ class ANetCustomerProfileService extends ANetRequestService {
                     $bankAccount->setAccountNumber($paymentProfile->getPayment()->getBankAccount()->getAccountNumber());
                     $bankAccount->setAccountType($paymentProfile->getPayment()->getBankAccount()->getAccountType());
                     $bankAccount->setNameOnAccount($paymentProfile->getPayment()->getBankAccount()->getNameOnAccount());
-                    $bankAccount->setBankName($paymentProfile->getPayment()->getBankAccount()->getBankName());
                     $paymentType->setBankAccount($bankAccount);
                 }
 
