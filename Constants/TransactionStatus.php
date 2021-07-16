@@ -74,6 +74,7 @@ class TransactionStatus {
             array("code" => self::STATUS_GENERAL_ERROR,  "description" => "General Error"),
             array("code" => self::STATUS_FAILED_REVIEW,  "description" => "Failed to Review"),
             array("code" => self::STATUS_SETTLED_SUCCESSFULLY,  "description" => "Settled Successfully"),
+            array("code" => self::STATUS_PENDING_SETTLEMENT,  "description" => "Pending Settlement"),
             array("code" => self::STATUS_SETTLEMENT_ERROR,  "description" => "Settlement Error"),
             array("code" => self::STATUS_UNDER_REVIEW,  "description" => "Under Review"),
             array("code" => self::STATUS_VOIDED,  "description" => "Voided"),
