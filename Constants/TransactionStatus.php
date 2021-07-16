@@ -18,6 +18,7 @@ class TransactionStatus {
     public const STATUS_FAILED_REVIEW = "failedReview";
     public const STATUS_SETTLED_SUCCESSFULLY = "settledSuccessfully";
     public const STATUS_SETTLEMENT_ERROR = "settlementError";
+    public const STATUS_PENDING_SETTLEMENT = "pendingSettlement";
     public const STATUS_UNDER_REVIEW = "underReview";
     public const STATUS_VOIDED = "voided";
     public const STATUS_FDS_PENDING_REVIEW = "FDSPendingReview";
@@ -32,6 +33,7 @@ class TransactionStatus {
             self::STATUS_COMMUNICATION_ERROR,           // Communication error
             self::STATUS_REFUND_PENDING_SETTLEMENT,     // Refund pending settlement
             self::STATUS_APPROVED_REVIEW,               // Approved for review
+            self::STATUS_PENDING_SETTLEMENT,            // Pending settlement
         );
     }
 
