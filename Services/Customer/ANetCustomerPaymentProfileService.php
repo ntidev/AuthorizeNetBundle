@@ -9,6 +9,7 @@ use NTI\AuthorizeNetBundle\Models\Customer\CustomerPaymentProfileModel;
 use net\authorize\api\contract\v1\CreateCustomerPaymentProfileRequest;
 use net\authorize\api\contract\v1\CreateCustomerPaymentProfileResponse;
 use net\authorize\api\contract\v1\CreditCardType;
+use net\authorize\api\contract\v1\BankAccountType;
 use net\authorize\api\contract\v1\CustomerAddressType;
 use net\authorize\api\contract\v1\CustomerPaymentProfileExType;
 use net\authorize\api\contract\v1\CustomerPaymentProfileMaskedType;
@@ -98,18 +99,6 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
             throw new ANetRequestException("The Contact information is required for new Payment Profiles.");
         }
 
-        if(!$profile->getPayment()) {
-            throw new ANetRequestException("The Credit Card information is required for new Payment Profiles.");
-        }
-
-        // Set credit card information for payment profile
-        $creditCard = new CreditCardType();
-        $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
-        $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
-        $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
-        $paymentCreditCard = new PaymentType();
-        $paymentCreditCard->setCreditCard($creditCard);
-
         // Create the Bill To info for new payment type
         $billTo = new CustomerAddressType();
         $billTo->setFirstName($profile->getBillTo()->getFirstName());
@@ -122,11 +111,34 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $billTo->setZip($profile->getBillTo()->getZip());
         $billTo->setCountry($profile->getBillTo()->getCountry());
 
+        // Process the payment profile
+        if(!$profile->getPayment()) {
+            throw new ANetRequestException("The Credit Card or Bank Account information is required for new Payment Profiles.");
+        }
+
+        // Check if it's a bank account or a credit card
+        $paymentType = new PaymentType();
+        if($profile->getPayment()->getCreditCard() != null) {
+            // Set credit card information for payment profile
+            $creditCard = new CreditCardType();
+            $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
+            $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
+            $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
+            $paymentType->setCreditCard($creditCard);
+        } else {
+            $bankAccount = new BankAccountType();
+            $bankAccount->setRoutingNumber($profile->getPayment()->getBankAccount()->getRoutingNumber());
+            $bankAccount->setAccountNumber($profile->getPayment()->getBankAccount()->getAccountNumber());
+            $bankAccount->setAccountType($profile->getPayment()->getBankAccount()->getAccountType());
+            $bankAccount->setNameOnAccount($profile->getPayment()->getBankAccount()->getNameOnAccount());
+            $paymentType->setBankAccount($bankAccount);
+        }
+
         // Create a new Customer Payment Profile object
         $paymentprofile = new CustomerPaymentProfileType();
-        $paymentprofile->setCustomerType('individual');
+        $paymentprofile->setCustomerType('business');
         $paymentprofile->setBillTo($billTo);
-        $paymentprofile->setPayment($paymentCreditCard);
+        $paymentprofile->setPayment($paymentType);
         $paymentprofile->setDefaultPaymentProfile(true);
 
         // Assemble the complete transaction request
@@ -185,19 +197,29 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $request->setCustomerProfileId($customerProfileId);
         $request->setValidationMode($this->validationMode);
 
-        // CreditCard information
-        // As per the documentation this needs to be sent despite being changed or not
-        $creditCard = new CreditCardType();
-        if($profile->getPayment()) {
-            $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
-            $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
-            $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
+        // Check if it's a bank account or a credit card
+        $paymentType = new PaymentType();
+        if($profile->getPayment()->getCreditCard() != null) {
+            // Set credit card information for payment profile
+            $creditCard = new CreditCardType();
+            if($profile->getPayment()) {
+                $creditCard->setCardNumber($profile->getPayment()->getCreditCard()->getCardNumber());
+                $creditCard->setExpirationDate($profile->getPayment()->getCreditCard()->getExpirationDate());
+                $creditCard->setCardCode($profile->getPayment()->getCreditCard()->getCode());
+            } else {
+                $creditCard->setCardNumber($paymentProfile->getPayment()->getCreditCard()->getCardNumber());
+                $creditCard->setExpirationDate($paymentProfile->getPayment()->getCreditCard()->getExpirationDate());
+            }
+            $paymentType->setCreditCard($creditCard);
         } else {
-            $creditCard->setCardNumber($paymentProfile->getPayment()->getCreditCard()->getCardNumber());
-            $creditCard->setExpirationDate($paymentProfile->getPayment()->getCreditCard()->getExpirationDate());
+            $bankAccount = new BankAccountType();
+            $bankAccount->setRoutingNumber($profile->getPayment()->getBankAccount()->getRoutingNumber());
+            $bankAccount->setAccountNumber($profile->getPayment()->getBankAccount()->getAccountNumber());
+            $bankAccount->setAccountType($profile->getPayment()->getBankAccount()->getAccountType());
+            $bankAccount->setNameOnAccount($profile->getPayment()->getBankAccount()->getNameOnAccount());
+            $paymentType->setBankAccount($bankAccount);
         }
-        $paymentCreditCard = new PaymentType();
-        $paymentCreditCard->setCreditCard($creditCard);
+
 
         if($profile->getBillTo()) {
             $billTo = new CustomerAddressType();
@@ -218,7 +240,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $profile = new CustomerPaymentProfileExType();
         $profile->setCustomerPaymentProfileId($paymentProfileId);
         $profile->setBillTo($billTo);
-        $profile->setPayment($paymentCreditCard);
+        $profile->setPayment($paymentType);
 
         // Submit a UpdatePaymentProfileRequest
         $request->setPaymentProfile($profile);

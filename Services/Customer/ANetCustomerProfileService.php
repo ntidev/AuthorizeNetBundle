@@ -15,6 +15,7 @@ use net\authorize\api\contract\v1\GetCustomerProfileIdsResponse;
 use net\authorize\api\contract\v1\GetCustomerProfileRequest;
 use net\authorize\api\contract\v1\GetCustomerProfileResponse;
 use net\authorize\api\contract\v1\PaymentType;
+use net\authorize\api\contract\v1\BankAccountType;
 use net\authorize\api\contract\v1\UpdateCustomerProfileRequest;
 use net\authorize\api\contract\v1\UpdateCustomerProfileResponse;
 use net\authorize\api\controller\CreateCustomerProfileController;
@@ -104,6 +105,7 @@ class ANetCustomerProfileService extends ANetRequestService {
      */
     public function createProfile($data) {
 
+
         /** @var CustomerProfileModel $profile */
         $profile = $this->container->get('jms_serializer')->deserialize(json_encode($data), CustomerProfileModel::class, 'json');
 
@@ -112,6 +114,7 @@ class ANetCustomerProfileService extends ANetRequestService {
         if(count($errors) > 0) {
             throw new ANetInvalidRequestFormatException($errors);
         }
+
 
         // Prepare the Request
         $refId = uniqid("ref_");
@@ -131,6 +134,7 @@ class ANetCustomerProfileService extends ANetRequestService {
 
             /** @var CustomerPaymentProfileModel $paymentProfile */
             foreach($profile->getPaymentProfiles() as $paymentProfile) {
+
                 if(!$paymentProfile->getBillTo()) {
                     throw new ANetRequestException("The Contact information is required for new Payment Profiles.");
                 }
@@ -139,13 +143,24 @@ class ANetCustomerProfileService extends ANetRequestService {
                     throw new ANetRequestException("The Credit Card information is required for new Payment Profiles.");
                 }
 
-                // Set credit card information for payment profile
-                $creditCard = new CreditCardType();
-                $creditCard->setCardNumber($paymentProfile->getPayment()->getCreditCard()->getCardNumber());
-                $creditCard->setExpirationDate($paymentProfile->getPayment()->getCreditCard()->getExpirationDate());
-                $creditCard->setCardCode($paymentProfile->getPayment()->getCreditCard()->getCode());
-                $paymentCreditCard = new PaymentType();
-                $paymentCreditCard->setCreditCard($creditCard);
+
+                $paymentType = new PaymentType();
+                if($paymentProfile->getPayment()->getCreditCard() != null) {
+                    // Set credit card information for payment profile
+                    $creditCard = new CreditCardType();
+                    $creditCard->setCardNumber($paymentProfile->getPayment()->getCreditCard()->getCardNumber());
+                    $creditCard->setExpirationDate($paymentProfile->getPayment()->getCreditCard()->getExpirationDate());
+                    $creditCard->setCardCode($paymentProfile->getPayment()->getCreditCard()->getCode());
+                    $paymentType->setCreditCard($creditCard);
+                } else {
+                    $bankAccount = new BankAccountType();
+                    $bankAccount->setRoutingNumber($paymentProfile->getPayment()->getBankAccount()->getRoutingNumber());
+                    $bankAccount->setAccountNumber($paymentProfile->getPayment()->getBankAccount()->getAccountNumber());
+                    $bankAccount->setAccountType($paymentProfile->getPayment()->getBankAccount()->getAccountType());
+                    $bankAccount->setNameOnAccount($paymentProfile->getPayment()->getBankAccount()->getNameOnAccount());
+                    $paymentType->setBankAccount($bankAccount);
+                }
+
 
                 // Create the Bill To info for new payment type
                 $billTo = new CustomerAddressType();
@@ -163,7 +178,7 @@ class ANetCustomerProfileService extends ANetRequestService {
                 $paymentProfileType = new CustomerPaymentProfileType();
                 $paymentProfileType->setCustomerType($profile->getCustomerType());
                 $paymentProfileType->setBillTo($billTo);
-                $paymentProfileType->setPayment($paymentCreditCard);
+                $paymentProfileType->setPayment($paymentType);
 
                 $paymentProfileTypes[] = $paymentProfileType;
             }
@@ -195,7 +210,7 @@ class ANetCustomerProfileService extends ANetRequestService {
                     return $matches[0];
                 }
             }
-            
+
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
 
