@@ -56,6 +56,7 @@ class ANetPaymentService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
@@ -65,11 +66,13 @@ class ANetPaymentService extends ANetRequestService
             {
                 return $tresponse;
             } else {
+                $this->container->get('logger')->log("ERROR", json_encode($response));
                 throw new ANetRequestException("Error " . $tresponse->getErrors()[0]->getErrorCode() . ": " . $tresponse->getErrors()[0]->getErrorText());
             }
         } else {
 
             if($response != null && $response->getTransactionResponse() != null) {
+                $this->container->get('logger')->log("ERROR", json_encode($response));
                 $tresponse = $response->getTransactionResponse();
                 throw new ANetRequestException("Error " . $tresponse->getErrors()[0]->getErrorCode() . ": " . $tresponse->getErrors()[0]->getErrorText());
             }

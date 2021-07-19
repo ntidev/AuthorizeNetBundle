@@ -65,12 +65,14 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if(($response != null)){
             return $response->getPaymentProfile();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -92,6 +94,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         $validator = $this->container->get('validator');
         $errors = $validator->validate($profile);
         if(count($errors) > 0) {
+            $this->container->get('logger')->log("ERROR", json_encode($errors));
             throw new ANetInvalidRequestFormatException($errors);
         }
 
@@ -159,12 +162,14 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             return $response->getCustomerPaymentProfileId();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -250,6 +255,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
@@ -257,6 +263,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             return $profile;
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -287,6 +294,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
@@ -294,6 +302,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             return true;
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -316,12 +325,14 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             return true;
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
