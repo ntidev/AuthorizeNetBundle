@@ -149,7 +149,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
         // Add an existing profile id to the request
         $request->setCustomerProfileId($customerProfileId);
         $request->setPaymentProfile($paymentprofile);
-        $request->setValidationMode("liveMode");
+        $request->setValidationMode("testMode");
 
 
         /** @var CreateCustomerPaymentProfileController $controller */
@@ -244,7 +244,7 @@ class ANetCustomerPaymentProfileService extends ANetRequestService {
 
         // Submit a UpdatePaymentProfileRequest
         $request->setPaymentProfile($profile);
-        $request->setValidationMode("liveMode");
+        $request->setValidationMode("testMode");
         $controller = new UpdateCustomerPaymentProfileController($request);
 
         try {
