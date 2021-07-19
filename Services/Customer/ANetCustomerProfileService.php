@@ -62,6 +62,7 @@ class ANetCustomerProfileService extends ANetRequestService {
             $profileIds = $response->getIds();
             return $profileIds;
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -83,6 +84,7 @@ class ANetCustomerProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
@@ -90,6 +92,7 @@ class ANetCustomerProfileService extends ANetRequestService {
             $profile = $response->getProfile();
             return $profile;
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -112,6 +115,7 @@ class ANetCustomerProfileService extends ANetRequestService {
         $validator = $this->container->get('validator');
         $errors = $validator->validate($profile);
         if(count($errors) > 0) {
+            $this->container->get('logger')->log("ERROR", json_encode($errors));
             throw new ANetInvalidRequestFormatException($errors);
         }
 
@@ -195,12 +199,14 @@ class ANetCustomerProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return $response->getCustomerProfileId();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
 
             // Extract the Profile ID if trying to create a duplicate.
@@ -233,6 +239,7 @@ class ANetCustomerProfileService extends ANetRequestService {
         $errors = $validator->validate($profile);
 
         if(count($errors) > 0) {
+            $this->container->get('logger')->log("ERROR", json_encode($errors));
             throw new ANetInvalidRequestFormatException($errors);
         }
 
@@ -255,12 +262,14 @@ class ANetCustomerProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return true;
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -282,11 +291,13 @@ class ANetCustomerProfileService extends ANetRequestService {
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
             return true;
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }

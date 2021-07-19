@@ -41,12 +41,14 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransaction()) ? $response->getTransaction() : array();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -70,12 +72,14 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -100,12 +104,14 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -134,6 +140,7 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
@@ -141,6 +148,7 @@ class ANetTransactionReportingService extends ANetRequestService
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getBatchList()) ? $response->getBatchList() : array();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -167,12 +175,14 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -199,6 +209,7 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
@@ -206,6 +217,7 @@ class ANetTransactionReportingService extends ANetRequestService
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getBatch()->getStatistics()) ? $response->getBatch()->getStatistics() : array();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -227,12 +239,14 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
         if (($response != null) && ($response->getMessages()->getResultCode() == "Ok")) {
             return ($response->getTransactions()) ? $response->getTransactions() : array();
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
@@ -261,6 +275,7 @@ class ANetTransactionReportingService extends ANetRequestService
         try {
             $response = $controller->executeWithApiResponse($this->endpoint);
         } catch (\Exception $ex) {
+            $this->container->get('logger')->log("ERROR", $ex->getMessage());
             throw new ANetRequestException($ex->getMessage());
         }
 
@@ -269,10 +284,12 @@ class ANetTransactionReportingService extends ANetRequestService
             if ($tresponse != null && $tresponse->getMessages() != null) {
                 return $tresponse;
             } else {
+                $this->container->get('logger')->log("ERROR", json_encode($response));
                 $errorMessages = $tresponse->getMessages()->getMessage();
                 throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
             }
         } else {
+            $this->container->get('logger')->log("ERROR", json_encode($response));
             $errorMessages = $response->getMessages()->getMessage();
             throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
         }
