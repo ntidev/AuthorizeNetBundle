@@ -91,7 +91,7 @@ class TransactionStatus {
                 return $status["description"];
             }
         }
-        return "Unknown";
+        return $transactionStatus ?? "Unknown";
     }
 
 }
