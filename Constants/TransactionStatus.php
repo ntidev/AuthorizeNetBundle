@@ -15,15 +15,21 @@ class TransactionStatus {
     public const STATUS_COULD_NOT_VOID = "couldNotVoid";
     public const STATUS_EXPIRED = "expired";
     public const STATUS_GENERAL_ERROR = "generalError";
+    public const STATUS_PENDING_FINAL_SETTLEMENT="pendingFinalSettlement";
+    public const STATUS_PENDING_SETTLEMENT = "pendingSettlement";
     public const STATUS_FAILED_REVIEW = "failedReview";
     public const STATUS_SETTLED_SUCCESSFULLY = "settledSuccessfully";
     public const STATUS_SETTLEMENT_ERROR = "settlementError";
-    public const STATUS_PENDING_SETTLEMENT = "pendingSettlement";
+    
     public const STATUS_UNDER_REVIEW = "underReview";
     public const STATUS_VOIDED = "voided";
     public const STATUS_FDS_PENDING_REVIEW = "FDSPendingReview";
     public const STATUS_FDS_AUTHORIZED_PENDING_REVIEW = "FDSAuthorizedPendingReview";
     public const STATUS_RETURNED_ITEM = "returnedItem";
+    public const STATUS_RETURNED = "returned";
+    public const STATUS_CHARGE_BACK="chargeback";
+    public const STATUS_CHARGE_REVERSAL="chargebackReversal";
+    public const STATUS_AUTORIZED_PENDING_RELEASE="authorizedPendingRelease";
 
 
     public static function getPendingStatuses() {
@@ -57,6 +63,16 @@ class TransactionStatus {
             self::STATUS_SETTLEMENT_ERROR,               // Settlement error
             self::STATUS_UNDER_REVIEW,                   // Under review
             self::STATUS_VOIDED,                         // Voided
+            self::STATUS_RETURNED_ITEM,                  // Returned Item
+            self::STATUS_RETURNED,                       // Returned
+        ));
+    }
+
+    public static function isUnknown($transactionStatus) {
+        return in_array($transactionStatus, array(
+            self::STATUS_PENDING_FINAL_SETTLEMENT,       // Pending Final Settlement
+            self::STATUS_CHARGE_BACK,                    // Charge Back
+            self::STATUS_CHARGE_REVERSAL,                // Charge Reversal
         ));
     }
 
@@ -75,12 +91,17 @@ class TransactionStatus {
             array("code" => self::STATUS_FAILED_REVIEW,  "description" => "Failed to Review"),
             array("code" => self::STATUS_SETTLED_SUCCESSFULLY,  "description" => "Settled Successfully"),
             array("code" => self::STATUS_PENDING_SETTLEMENT,  "description" => "Pending Settlement"),
+            array("code" => self::STATUS_PENDING_FINAL_SETTLEMENT,  "description" => "Pending Final Settlement"),
             array("code" => self::STATUS_SETTLEMENT_ERROR,  "description" => "Settlement Error"),
             array("code" => self::STATUS_UNDER_REVIEW,  "description" => "Under Review"),
             array("code" => self::STATUS_VOIDED,  "description" => "Voided"),
             array("code" => self::STATUS_FDS_PENDING_REVIEW,  "description" => "FDS Pending Review"),
             array("code" => self::STATUS_FDS_AUTHORIZED_PENDING_REVIEW,  "description" => "FDS Authorized Pending Review"),
             array("code" => self::STATUS_RETURNED_ITEM,  "description" => "Returned Item"),
+            array("code" => self::STATUS_RETURNED,  "description" => "Returned"),
+            array("code" => self::STATUS_CHARGE_BACK,  "description" => "Charge Back"),
+            array("code" => self::STATUS_CHARGE_REVERSAL,  "description" => "Charge Reversal"),
+            
         );
     }
 
