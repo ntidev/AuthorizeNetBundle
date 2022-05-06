@@ -48,31 +48,31 @@ class TransactionStatus {
     }
 
     public static function isSettled($transactionStatus) {
-        return in_array($transactionStatus, array(
-            self::STATUS_SETTLED_SUCCESSFULLY,          // Settled successfully
+        return in_array(strtolower($transactionStatus), array(
+            strtolower(self::STATUS_SETTLED_SUCCESSFULLY),          // Settled successfully
         ));
     }
 
     public static function isFailed($transactionStatus) {
-        return in_array($transactionStatus, array(
-            self::STATUS_DECLINED,                       // Declined
-            self::STATUS_COULD_NOT_VOID,                 // Could not void
-            self::STATUS_EXPIRED,                        // Expired
-            self::STATUS_GENERAL_ERROR,                  // General error
-            self::STATUS_FAILED_REVIEW,                  // Failed review
-            self::STATUS_SETTLEMENT_ERROR,               // Settlement error
-            self::STATUS_UNDER_REVIEW,                   // Under review
-            self::STATUS_VOIDED,                         // Voided
-            self::STATUS_RETURNED_ITEM,                  // Returned Item
-            self::STATUS_RETURNED,                       // Returned
+        return in_array(strtolower($transactionStatus), array(
+            strtolower(self::STATUS_DECLINED),                       // Declined
+            strtolower(self::STATUS_COULD_NOT_VOID),                 // Could not void
+            strtolower(self::STATUS_EXPIRED),                        // Expired
+            strtolower(self::STATUS_GENERAL_ERROR),                  // General error
+            strtolower(self::STATUS_FAILED_REVIEW),                  // Failed review
+            strtolower(self::STATUS_SETTLEMENT_ERROR),               // Settlement error
+            strtolower(self::STATUS_UNDER_REVIEW),                   // Under review
+            strtolower(self::STATUS_VOIDED),                         // Voided
+            strtolower(self::STATUS_RETURNED_ITEM),                  // Returned Item
+            strtolower(self::STATUS_RETURNED),                       // Returned
         ));
     }
 
     public static function isUnknown($transactionStatus) {
-        return in_array($transactionStatus, array(
-            self::STATUS_PENDING_FINAL_SETTLEMENT,       // Pending Final Settlement
-            self::STATUS_CHARGE_BACK,                    // Charge Back
-            self::STATUS_CHARGE_REVERSAL,                // Charge Reversal
+        return in_array(strtolower($transactionStatus), array(
+            strtolower(self::STATUS_PENDING_FINAL_SETTLEMENT),       // Pending Final Settlement
+            strtolower(self::STATUS_CHARGE_BACK),                    // Charge Back
+            strtolower(self::STATUS_CHARGE_REVERSAL),                // Charge Reversal
         ));
     }
 
