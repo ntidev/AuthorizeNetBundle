@@ -67,17 +67,19 @@ class ANetPaymentService extends ANetRequestService
                 return $tresponse;
             } else {
                 $this->container->get('logger')->log("ERROR", json_encode($response));
-                throw new ANetRequestException("Error " . $tresponse->getErrors()[0]->getErrorCode() . ": " . $tresponse->getErrors()[0]->getErrorText());
+                throw new ANetRequestException($tresponse->getErrors()[0]->getErrorText(),$tresponse->getErrors()[0]->getErrorCode());
             }
         } else {
 
             if($response != null && $response->getTransactionResponse() != null) {
                 $this->container->get('logger')->log("ERROR", json_encode($response));
                 $tresponse = $response->getTransactionResponse();
-                throw new ANetRequestException("Error " . $tresponse->getErrors()[0]->getErrorCode() . ": " . $tresponse->getErrors()[0]->getErrorText());
+                $ErrorCode=$tresponse->getErrors() != null ? $tresponse->getErrors()[0]->getErrorCode() : $response->getMessages()->getMessage()[0]->getCode();
+                $ErrorText=$tresponse->getErrors() != null ? $tresponse->getErrors()[0]->getErrorText() : $response->getMessages()->getMessage()[0]->getText();
+                throw new ANetRequestException($ErrorText,$ErrorCode);
             }
             $errorMessages = $response->getMessages()->getMessage();
-            throw new ANetRequestException("Error " . $errorMessages[0]->getCode() . ": " . $errorMessages[0]->getText());
+            throw new ANetRequestException($errorMessages[0]->getText(),$errorMessages[0]->getCode());
         }
     }
 
